@@ -1,3 +1,11 @@
+#=======================================================================
+#	$Id$
+#	Protocol handler allowing tuples of strings or integers to be
+#	passed between client and server.
+#	Each tuple is represented as a line of text; integer encoded as
+#	'i' plus decimal representation, string as 's' plus URL-encoded
+#	bytes; items space-separated
+#=======================================================================
 from twisted.protocols import basic
 
 import urllib
@@ -26,3 +34,6 @@ class TupleProtocol(basic.LineReceiver):
     def sendTuple(self, values):
         line = ' '.join(map(encode, values))
         self.sendLine(line)
+
+    def sendValues(self, *values):
+	self.sendTuple(values)
