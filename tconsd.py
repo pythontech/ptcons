@@ -9,10 +9,13 @@ from tupleprotocol import TupleProtocol
 
 buffer = '\n'.join(map(str, range(12345, 12500)))
 
+conns = {}
+
 class ConsProtocol(TupleProtocol):
     def connectionMade(self):
+	conns[id(self)] = self
         print 'connection from %s' % self.transport.getPeer()
-        self.sendTuple(('v', '-', '-'))
+        self.sendTuple(('v', '', ''))
         self.sendTuple(('c', 'localhost', len(buffer)))
 
     def tupleReceived(self, tokens):
@@ -34,6 +37,7 @@ class ConsProtocol(TupleProtocol):
 
     def connectionLost(self, reason):
         print 'Client %s disconnected' % self.transport.getPeer()
+	del conns[id(self)]
 
     def error(self, err):
         self.reply('e', err)
@@ -44,5 +48,16 @@ class ConsProtocol(TupleProtocol):
 class ConsFactory(protocol.ServerFactory):
     protocol = ConsProtocol
 
+def newData():
+    global buffer, conns
+    # Add some new data
+    data = str(len(buffer)) + '\n'
+    buffer += data
+    # Broadcast new size to client(s)
+    for prot in conns.values():
+	prot.reply('p', len(buffer))
+    reactor.callLater(10, newData)
+    
 reactor.listenTCP(8183, ConsFactory())
+reactor.callLater(10, newData)
 reactor.run()
