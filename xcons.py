@@ -33,7 +33,8 @@ class XconsProtocol(TupleProtocol):
 		    compatible = False
 	    if not compatible:
 		reactor.stop()
-        elif cmd == 'c':
+	    self.reply('m', 'vx_test-17')
+        elif cmd == 'm':
             # Connected to host
             host, pos = args
             root.wm_title('xcons: %s' % host)
@@ -81,6 +82,15 @@ ysc.config(command=text.yview)
 
 ysc.pack(side=RIGHT, fill=Y)
 text.pack(side=TOP, fill=BOTH)
+
+# Intercept key presses
+def keypress(event):
+    print "KeyPress %r" % (event.char,)
+    if event.char.isalpha():
+	# Don't allow default event handler to process it
+	return "break"
+
+text.bind('<KeyPress>', keypress)
 
 # Link Tk into twisted main loop
 tksupport.install(root)
