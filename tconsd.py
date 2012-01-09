@@ -12,6 +12,7 @@ buffer = '\n'.join(map(str, range(12345, 12500)))
 conns = {}
 
 class ConsProtocol(TupleProtocol):
+    '''Handler for a connection from a client'''
     def connectionMade(self):
 	conns[id(self)] = self
         print 'connection from %s' % self.transport.getPeer()
