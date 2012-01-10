@@ -16,6 +16,16 @@ CONNECTED = 'connected'
 CONNECTING = 'connecting'
 DISCONNECTED = 'disconnected'
 
+def optionDesc(opt):
+    desc = {'\x01':'Echo',
+	    '\x03':'Suppress Go Ahead',
+	    '\x18':'Terminal Type',
+	    }.get(opt)
+    if desc:
+	return '%r (%s)' % (opt, desc)
+    else:
+	return repr(opt)
+
 class ConsoleMonitor:
     '''One instance of this handles a single VCP port.
     A connection is attempted on start-up, then whenever
@@ -92,11 +102,13 @@ class ConsoleProtocol(telnet.TelnetTransport):
 	self.monitor.protocol = self
 
     def enableLocal(self, option):
-	print 'enableLocal %r' % option
+	'''Peer is suggesting we enable an option (DO xxx)'''
+	print 'enableLocal %s' % optionDesc(option)
 	return False
 
     def enableRemote(self, option):
-	print 'enableRemote %r' % option
+	'''Peer is sugegsting it will enable an option (WILL xxx)'''
+	print 'enableRemote %s' % optionDesc(option)
 	return False
 
     def applicationDataReceived(self, data):
