@@ -1,0 +1,19 @@
+xcons
+=====
+
+- resolve exit error
+- handle delete key
+- handle pasting selection
+- read-only mode
+- decide how to handle e.g. '\b \b' from host
+- populate with only last (n)KB of data
+
+consd
+=====
+
+- save output to log file
+- load existing log file on start-up
+- rotate log files at midnight
+- use identd to identify client
+- permission list per host
+- refuse input if not in list
